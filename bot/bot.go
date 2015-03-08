@@ -30,6 +30,12 @@ func (c *IRCRPC) Announce(src *rpc2.Client, msg *PrivMsgArgs, reply *bool) error
 	return nil
 }
 
+func (c *IRCRPC) Join(src *rpc2.Client, channel string, reply *bool) error {
+	c.Client.Join(channel)
+	*reply = true
+	return nil
+}
+
 // plugins register to receive privmsg
 func (c *IRCRPC) Register(src *rpc2.Client, _ *struct{}, reply *bool) error {
 	c.Listeners[src] = true

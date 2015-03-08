@@ -45,6 +45,7 @@ func main() {
 	srv := rpc2.NewServer()
 	srv.Handle("register", ir.Register)
 	srv.Handle("privmsg", ir.Announce)
+	srv.Handle("join", ir.Join)
 	go srv.Accept(l)
 
 	fmt.Println("IRC process running, ready for RPC")
