@@ -2,16 +2,25 @@ package main
 
 import (
 	bot "./bot"
+	cfg "./bot/config"
 	"fmt"
 	"github.com/cenkalti/rpc2"
 	irc "github.com/fluffle/goirc/client"
 	"net"
 )
 
+type bot_conf struct {
+	IRCHost    string `json:"irc_addr"`
+	ListenAddr string `json:"listen_addr"`
+}
+
 func main() {
+	conf := &bot_conf{}
+	cfg.NewConfig(conf, "main.json")
+
 	ir := bot.NewClient("bot")
 	ir.Client.Config().SSL = false
-	ir.Client.Config().Server = "127.0.0.1:6667" // "irc.freenode.net:7000"
+	ir.Client.Config().Server = conf.IRCHost
 	ir.Client.Config().NewNick = func(nick string) string { return nick + "_" }
 
 	ir.Client.HandleFunc("connected", func(conn *irc.Conn, line *irc.Line) {
@@ -36,7 +45,7 @@ func main() {
 	})
 
 	// RPC
-	l, e := net.Listen("tcp", ":1234")
+	l, e := net.Listen("tcp", conf.ListenAddr)
 	defer l.Close()
 	if e != nil {
 		panic(e)

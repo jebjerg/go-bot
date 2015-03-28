@@ -20,11 +20,15 @@ func OnPrivMsg(client *rpc2.Client, line *irc.Line, reply *bool) error {
 
 type boilerplate_conf struct {
 	Channels []string `json:"channels"`
+	BotHost  string   `json:"bot_host"`
 }
 
 func main() {
+	conf := &boilerplate_conf{}
+	cfg.NewConfig(conf, "boilerplate.json")
+
 	// RPC
-	conn, _ := net.Dial("tcp", "localhost:1234")
+	conn, _ := net.Dial("tcp", conf.BotHost)
 	c := rpc2.NewClient(conn)
 	go c.Run()
 	// register privmsg
@@ -32,8 +36,6 @@ func main() {
 	var reply bool
 	c.Call("register", struct{}{}, &reply)
 
-	conf := &boilerplate_conf{}
-	cfg.NewConfig(conf, "boilerplate.json")
 	for _, channel := range conf.Channels {
 		fmt.Println("joining", channel)
 		c.Call("join", channel, nil)
