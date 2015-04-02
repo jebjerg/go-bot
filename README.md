@@ -34,10 +34,10 @@ Usage of mybot:
   -rpc=true: enable RPC support
 ```
 Put scripts in `./` or specify path in `mybot.json` (e.g. `"lua_scripts": "scripts"` to use `mybot/scripts/uptime.lua`).
-Reload scripts by issuing a `SIGKILL`, `SIGUSR1` or `SIGUSR2`, e.g. `pkill -HUP mybot`.
+Reload scripts by issuing a `SIGKILL`, `SIGUSR1` or `SIGUSR2`, e.g.:
 
 ```
-
+pkill -HUP mybot
 ```
 
 If you need help getting started with `go`, follow these [two steps to install](https://golang.org/doc/install#install)
