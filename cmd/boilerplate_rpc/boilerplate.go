@@ -1,11 +1,11 @@
 package main
 
 import (
-	bot "./bot"
-	cfg "./bot/config"
 	"fmt"
 	"github.com/cenkalti/rpc2"
 	irc "github.com/fluffle/goirc/client"
+	bot "github.com/jebjerg/go-bot/bot"
+	cfg "github.com/jebjerg/go-bot/bot/config"
 	"net"
 )
 

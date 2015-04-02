@@ -1,18 +1,19 @@
 package main
 
 import (
-	bot "./bot"
-	cfg "./bot/config"
 	"flag"
 	"fmt"
 	"github.com/cenkalti/rpc2"
 	irc "github.com/fluffle/goirc/client"
+	bot "github.com/jebjerg/go-bot/bot"
+	cfg "github.com/jebjerg/go-bot/bot/config"
 	"net"
 )
 
 type bot_conf struct {
-	IRCHost    string `json:"irc_addr"`
-	ListenAddr string `json:"listen_addr"`
+	IRCHost       string `json:"irc_addr"`
+	ListenAddr    string `json:"listen_addr"`
+	LuaScriptPath string `json:"lua_scripts"`
 }
 
 func main() {
@@ -21,7 +22,7 @@ func main() {
 	flag.BoolVar(&lua_support, "lua", true, "enable Lua support")
 	flag.Parse()
 	conf := &bot_conf{}
-	cfg.NewConfig(conf, "main.json")
+	cfg.NewConfig(conf, "mybot.json")
 
 	ir := bot.NewClient("bot")
 	ir.Client.Config().SSL = false
@@ -54,6 +55,9 @@ func main() {
 	})
 
 	if lua_support {
+		if conf.LuaScriptPath != "" {
+			ir.LuaScriptPath = conf.LuaScriptPath
+		}
 		ir.InitLua()
 	}
 	if rpc_support {
