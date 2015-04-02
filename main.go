@@ -3,6 +3,7 @@ package main
 import (
 	bot "./bot"
 	cfg "./bot/config"
+	"flag"
 	"fmt"
 	"github.com/cenkalti/rpc2"
 	irc "github.com/fluffle/goirc/client"
@@ -15,6 +16,10 @@ type bot_conf struct {
 }
 
 func main() {
+	var rpc_support, lua_support bool
+	flag.BoolVar(&rpc_support, "rpc", true, "enable RPC support")
+	flag.BoolVar(&lua_support, "lua", true, "enable Lua support")
+	flag.Parse()
 	conf := &bot_conf{}
 	cfg.NewConfig(conf, "main.json")
 
@@ -36,27 +41,35 @@ func main() {
 	ir.Connect(nil, &connected)
 
 	ir.Client.HandleFunc("privmsg", func(conn *irc.Conn, line *irc.Line) {
-		var reply bool
-		for c, _ := range ir.Listeners {
-			if err := c.Call("privmsg", line, &reply); err != nil {
-				delete(ir.Listeners, c)
+		if lua_support {
+			ir.PrivMsgLua(line.Args[0], line.Args[1])
+		}
+		if rpc_support {
+			for c, _ := range ir.Listeners {
+				if err := c.Call("privmsg", line, nil); err != nil {
+					delete(ir.Listeners, c)
+				}
 			}
 		}
 	})
 
-	// RPC
-	l, e := net.Listen("tcp", conf.ListenAddr)
-	defer l.Close()
-	if e != nil {
-		panic(e)
+	if lua_support {
+		ir.InitLua()
+	}
+	if rpc_support {
+		l, e := net.Listen("tcp", conf.ListenAddr)
+		defer l.Close()
+		if e != nil {
+			panic(e)
+		}
+		srv := rpc2.NewServer()
+		srv.Handle("register", ir.Register)
+		srv.Handle("privmsg", ir.Announce)
+		srv.Handle("join", ir.Join)
+		go srv.Accept(l)
+		fmt.Println("RPC ready")
 	}
 
-	srv := rpc2.NewServer()
-	srv.Handle("register", ir.Register)
-	srv.Handle("privmsg", ir.Announce)
-	srv.Handle("join", ir.Join)
-	go srv.Accept(l)
-
-	fmt.Println("IRC process running, ready for RPC")
+	fmt.Println("IRC process running")
 	<-quit
 }
