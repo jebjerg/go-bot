@@ -2,7 +2,7 @@ package bot
 
 import (
 	"fmt"
-	lua "github.com/yuin/gopher-lua"
+	lua "github.com/jebjerg/gopher-lua"
 	"os"
 	"os/signal"
 	"path"

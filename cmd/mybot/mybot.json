@@ -1,5 +1,5 @@
 {
     "irc_addr": "127.0.0.1:6667",
-    "listen_addr": "127.0.0.1:1234"
+    "listen_addr": "127.0.0.1:1234",
     "lua_scripts": "."
 }

@@ -3,7 +3,7 @@ package bot
 import (
 	"github.com/cenkalti/rpc2"
 	irc "github.com/fluffle/goirc/client"
-	lua "github.com/yuin/gopher-lua"
+	lua "github.com/jebjerg/gopher-lua"
 )
 
 type VoidArgs struct{}
