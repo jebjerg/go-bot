@@ -2,7 +2,7 @@ package bot
 
 import (
 	"fmt"
-	lua "github.com/jebjerg/gopher-lua"
+	lua "github.com/yuin/gopher-lua"
 	"os"
 	"os/signal"
 	"path"
@@ -33,16 +33,17 @@ func (c *IRCRPC) LoadScripts() {
 		return
 	}
 	for _, file := range files {
-		state := lua.NewState()
-		c.BootstrapState(state)
-		c.LuaStates[state] = make(map[string][]*lua.LFunction)
-		if err := state.DoFile(file); err != nil {
-			c.LuaStates[state] = nil
-			state = nil
-			fmt.Println("WARNING:", file, "failed:", err)
-			continue
-		}
-		fmt.Println(file, "loaded")
+		go func(file string) {
+			state := lua.NewState()
+			c.BootstrapState(state)
+			c.LuaStates[state] = make(map[string][]*lua.LFunction)
+			if err := state.DoFile(file); err != nil {
+				c.LuaStates[state] = nil
+				state = nil
+				fmt.Println("WARNING:", file, "failed:", err)
+			}
+			fmt.Println(file, "loaded")
+		}(file)
 	}
 }
 
