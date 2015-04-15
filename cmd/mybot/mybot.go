@@ -1,6 +1,7 @@
 package main
 
 import (
+	"crypto/tls"
 	"flag"
 	"fmt"
 	"github.com/cenkalti/rpc2"
@@ -11,9 +12,11 @@ import (
 )
 
 type bot_conf struct {
-	IRCHost       string `json:"irc_addr"`
-	ListenAddr    string `json:"listen_addr"`
-	LuaScriptPath string `json:"lua_scripts"`
+	IRCHost              string `json:"irc_addr"`
+	IRCSSL               bool   `json:"irc_ssl"`
+	IRCSSLSkipValidation bool   `json:"irc_ssl_skip"`
+	ListenAddr           string `json:"listen_addr"`
+	LuaScriptPath        string `json:"lua_scripts"`
 }
 
 func main() {
@@ -25,7 +28,10 @@ func main() {
 	cfg.NewConfig(conf, "mybot.json")
 
 	ir := bot.NewClient("bot")
-	ir.Client.Config().SSL = false
+	if conf.IRCSSL {
+		ir.Client.Config().SSL = true
+		ir.Client.Config().SSLConfig = &tls.Config{InsecureSkipVerify: conf.IRCSSLSkipValidation}
+	}
 	ir.Client.Config().Server = conf.IRCHost
 	ir.Client.Config().NewNick = func(nick string) string { return nick + "_" }
 
