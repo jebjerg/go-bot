@@ -12,5 +12,5 @@ local name = "boilerplate"
 print(name.." loaded, whoo!")
 
 -- bot preloads and sets 'bot' table of functions representing the lua api
-bot.hook("PRIVMSG", echo)
-bot.hook("PRIVMSG", log_privmsg)
+bot.hook("PRIVMSG", "echo")
+bot.hook("PRIVMSG", "log_privmsg")

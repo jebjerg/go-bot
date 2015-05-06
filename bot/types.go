@@ -1,9 +1,9 @@
 package bot
 
 import (
+	lua "github.com/aarzilli/golua/lua"
 	"github.com/cenkalti/rpc2"
 	irc "github.com/fluffle/goirc/client"
-	lua "github.com/yuin/gopher-lua"
 )
 
 type VoidArgs struct{}
@@ -14,7 +14,7 @@ type PrivMsgArgs struct {
 
 type IRCRPC struct {
 	Client        *irc.Conn
-	LuaStates     map[*lua.LState]map[string][]*lua.LFunction
+	LuaStates     map[*lua.State]map[string][]string
 	LuaScriptPath string
 	Listeners     map[*rpc2.Client]bool
 }
